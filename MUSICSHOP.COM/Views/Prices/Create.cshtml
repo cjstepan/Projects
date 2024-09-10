@@ -1,0 +1,48 @@
+﻿@model MusicShop.com.Models.Price
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Price</h4>
+<style>
+    body {
+        background-color: lightgreen;
+    }
+</style>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="digitalPrice" class="control-label"></label>
+                <input asp-for="digitalPrice" class="form-control" />
+                <span asp-validation-for="digitalPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="vinylPrice" class="control-label"></label>
+                <input asp-for="vinylPrice" class="form-control" />
+                <span asp-validation-for="vinylPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="cdPrice" class="control-label"></label>
+                <input asp-for="cdPrice" class="form-control" />
+                <span asp-validation-for="cdPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

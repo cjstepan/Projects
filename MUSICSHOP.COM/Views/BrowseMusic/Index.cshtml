@@ -1,0 +1,120 @@
+﻿@model List<string>
+
+<h1>Browse Music</h1>
+<style>
+    body {
+        background-color: lightgreen;
+    }
+    
+    th {
+        padding-bottom: 10px;
+        padding-right: 10px;
+    }
+
+    td {
+        padding-right: 10px;
+        text-align: right;
+    }
+
+    #songName {
+        padding-left: 10px;
+    }
+
+    #name {
+        padding-left: 10px;
+        padding-right: 0px;
+        text-align: left;
+    }
+</style>
+
+<form asp-controller="BrowseMusic">
+    <!-- Dropdown for selecting genre -->
+    <div class="form-group">
+        <label for="genre">Select Genre:</label>
+        <select class="form-control" id="genre" name="genre" asp-items="@(new SelectList(ViewBag.Genres))">
+            <option value="">-- Select a Genre --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" asp-action="GetPerformers">Get Performers</button>
+
+    @if(ViewBag.Performers != null)
+    {
+        <!-- Dropdown for listing performers -->
+        <div class="form-group" id="performerDropdown">
+            <label for="performer">Select Performer:</label>
+            <select class="form-control" id="performer" name="performer" asp-items="@(new SelectList(ViewBag.Performers))">
+                <option value="">-- Select A Performer --</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" asp-action="GetSongs">Get Songs</button>
+    }
+    
+    @if (ViewBag.Songs != null)
+    {
+        <table border="1">
+            <thead>
+                <tr>
+                    <th id="songName">Song Name</th>
+                    <th>Digital Price</th>
+                    <th>Vinyl Price</th>
+                    <th>CD Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var song in ViewBag.Songs)
+                {
+                    <tr>
+                        <td id="name">@song.SongName</td>
+                        <td>
+                            @song.DigitalPrice
+                            <input type="radio" name="media-type-{@song.SongId}" value="digital" data-price="@song.DigitalPrice" />
+                        </td>
+                        <td>
+                            @song.VinylPrice
+                            <input type="radio" name="media-type-{@song.SongId}" value="vinyl" data-price="@song.VinylPrice" />
+                        </td>
+                        <td>
+                            @song.CDPrice
+                            <input type="radio" name="media-type-{@song.SongId}" value="cd" data-price="@song.CDPrice" />
+                        </td>
+                    </tr>
+
+                }
+
+            </tbody>
+        </table>
+
+        <button type="button" class="btn btn-primary" id="addToCartButton">Add to Cart</button>
+
+        @section Scripts {
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("#addToCartButton").click(function () {
+                    var selectedSongs = [];
+
+                    $(".radio-group input[type='radio']:checked").each(function () {
+                        var song = $(this).closest("tr").find("#name").text();
+                        var price = $(this).data("price");
+                        var type = $(this).closest("td").find("th").text().trim(); // Trim whitespace
+
+                        selectedSongs.push({ song, price, type });
+                    });
+
+                    $.ajax({
+                        url: '/BrowseMusic/SubmitCart',
+                        type: 'POST',
+                        data: JSON.stringify(selectedSongs),
+                        contentType: 'application/json',
+                        success: function () {
+                            alert('Songs added to cart');
+                        }
+                    });
+                });
+            });
+        </script>
+        }
+    }
+</form>
